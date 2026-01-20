@@ -26,7 +26,7 @@ return decImg;
 
 // Write pixels
 
-public static int Write(Stream writer, SKBitmap image)
+public static int Write(Stream writer, ref SKBitmap image)
 {
 TraceLogger.WriteLine("• DXT5-RGBA-Morton Texture Encode:");
 TraceLogger.WriteLine();
