@@ -171,9 +171,9 @@ private static uint GetPxMod(in TextureColor16 colorA, in TextureColor16 colorB,
 uint bestMod = 0;
 int bestError = int.MaxValue;
 
-uint totalMods = is2BPP ? 4u : 6u;
+uint maxMod = is2BPP ? 3u : 5u;
 
-for(uint mod = 0; mod < totalMods; mod++)
+for(uint mod = 0; mod < maxMod; mod++)
 {
 var c = EvaluateColor(colorA, colorB, mod, hardTransition, is2BPP, useAlpha);
 int error = TextureHelper.ColorDistanceL1(pixel, c, useAlpha);
