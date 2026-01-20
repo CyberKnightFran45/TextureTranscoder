@@ -40,7 +40,7 @@ GxtFormat.PVRII_2BPP => PVRTCII_2BPP_RGBA.Write(target, ref source),
 GxtFormat.PVRII_4BPP => PVRTCII_4BPP_RGBA.Write(target, ref source),
 GxtFormat.DXT1 => DXT1_RGBA.Write(target, source),
 GxtFormat.DXT3 => DXT3_RGBA.Write(target, source),
-GxtFormat.DXT5 => DXT5_RGBA_Morton.Write(target, source),
+GxtFormat.DXT5 => DXT5_RGBA_Morton.Write(target, ref source),
 GxtFormat.RGB888 => RGB888.Write(target, source),
 _ => ARGB1555.Write(target, source)
 };
