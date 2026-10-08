@@ -7,16 +7,22 @@ using System.Runtime.InteropServices;
 
 public unsafe struct TextureColor128
 {
-// Fields
+/// <summary> Red channel: <c>00 00 00 00 - FF FF FF FF</c> </summary>
 
 [FieldOffset(0)]
 public int Red;
 
+/// <summary> Green channel: <c>00 00 00 00 - FF FF FF FF</c> </summary>
+
 [FieldOffset(4)]
 public int Green;
 
+/// <summary> Blue channel: <c>00 00 00 00 - FF FF FF FF</c> </summary>
+
 [FieldOffset(8)]
 public int Blue;
+
+/// <summary> Alpha channel: <c>00 00 00 00 - FF FF FF FF</c> </summary>
 
 [FieldOffset(12)]
 public int Alpha;
@@ -60,13 +66,13 @@ if(str.IsEmpty)
 return new();
 
 if(str[0] == '#')
-str = str[1..]; // Skip '#' at the beginning
+str = str[ 1 .. ]; // Skip '#' at the beginning
 	
 if(str.Length != 32)
 throw new FormatException("Invalid RGBA16 length. Expected Length: 32-chars");
 
 using var rOwner = BinaryHelper.FromHex(str);
-var rawBytes = rOwner.AsSpan();
+var rawBytes = rOwner.GetView();
 
 return MemoryMarshal.Read<TextureColor128>(rawBytes);
 }

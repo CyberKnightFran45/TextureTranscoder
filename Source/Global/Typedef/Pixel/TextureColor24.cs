@@ -7,13 +7,17 @@ using System.Runtime.InteropServices;
 
 public struct TextureColor24
 {
-// Fields
+/// <summary> Red channel: <c>00 - FF</c> </summary>
 
 [FieldOffset(0)]
 public byte Red;
 
+/// <summary> Green channel: <c>00 - FF</c> </summary>
+
 [FieldOffset(1)]
 public byte Green;
+
+/// <summary> Blue channel: <c>00 - FF</c> </summary>
 
 [FieldOffset(2)]
 public byte Blue;
@@ -50,10 +54,10 @@ if(str.IsEmpty)
 return new();
 
 if(str[0] == '#')
-str = str[1..]; // Skip '#' at the beginning
-	
+str = str[ 1 .. ]; // Skip '#' at the beginning
+
 if(str.Length != 6)
-throw new FormatException("Invalid RGBA6 length. Expected 6 characters (#RRGGBB)");
+throw new FormatException("Invalid RGBA6 length. Expected: #RRGGBB (6 chars)");
 
 using var rOwner = BinaryHelper.FromHex(str);
 var rawBytes = rOwner.GetView();

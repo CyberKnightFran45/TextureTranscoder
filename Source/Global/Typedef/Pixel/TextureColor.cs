@@ -9,16 +9,22 @@ using System.Runtime.InteropServices;
 
 public unsafe struct TextureColor
 {
-// Fields
+/// <summary> Blue channel: <c>00 - FF</c> </summary>
 
 [FieldOffset(0)]
 public byte Blue;
 
+/// <summary> Green channel: <c>00 - FF</c> </summary>
+
 [FieldOffset(1)]
 public byte Green;
 
+/// <summary> Red channel: <c>00 - FF</c> </summary>
+
 [FieldOffset(2)]
 public byte Red;
+
+/// <summary> Alpha channel: <c>00 - FF</c> </summary>
 
 [FieldOffset(3)]
 public byte Alpha;
@@ -47,8 +53,12 @@ public TextureColor(in TextureColor24 c) : this(c.Red, c.Green, c.Blue)
 
 // ctor 4
 
-public TextureColor(in TextureColor128 c) : this( (byte)c.Red, (byte)c.Green, (byte)c.Blue, (byte)c.Alpha)
+public TextureColor(in TextureColor128 c)
 {
+Red = TextureHelper.ColorClamp(c.Red);
+Green = TextureHelper.ColorClamp(c.Green);
+Blue = TextureHelper.ColorClamp(c.Blue);
+Alpha = TextureHelper.ColorClamp(c.Alpha);
 }
 
 // Min Color (Black)
@@ -68,13 +78,13 @@ if(str.IsEmpty)
 return new();
 
 if(str[0] == '#')
-str = str[1..]; // Skip '#' at the beginning
-	
+str = str[ 1 .. ]; // Skip '#' at the beginning
+
 if(str.Length != 8)
-throw new FormatException("Invalid RGBA8 length. Expected 8 characters (#RRGGBBAA).");
+throw new FormatException("Invalid RGBA8 length. Expected: #RRGGBBAA (8 chars)");
 
 using var rOwner = BinaryHelper.FromHex(str);
-var rawBytes = rOwner.AsSpan();
+var rawBytes = rOwner.GetView();
 
 return MemoryMarshal.Read<TextureColor>(rawBytes);
 }
