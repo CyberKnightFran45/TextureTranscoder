@@ -1,6 +1,5 @@
 ﻿using System.IO;
 using System.IO.Compression;
-using BlossomLib.Modules.Compression;
 using SkiaSharp;
 using TextureTranscoder.Parsers.UTexture;
 
@@ -10,22 +9,13 @@ namespace TextureTranscoder.Parsers
 
 public static class TxzParser
 {
-// Compress U-Tex image
-
-private static void CompressImg(NativeBuffer input, Stream output, CompressionLevel level)
-{
-using var inputStream = input.GetStream();
-
-ZLibCompressor.CompressStream(inputStream, output, level);
-}
-
 // Encode TXZ (bitmap to stream)
 
 public static void Encode(SKBitmap source, Stream target, UTexFormat format, CompressionLevel level)
 {
 using var raw = UTexParser.Encode(source, format);
 
-CompressImg(raw, target, level);
+ZLibBufferCompressor.Compress(raw, target, level);
 }
 
 // Encode TXZ (stream based)
@@ -73,35 +63,20 @@ TraceImgParser.Encode("TXZ Encoding",
 			  
 }
 
-// Decompress U-Tex image
-
-private static NativeBuffer DecompressImg(Stream source)
-{
-int zlChunks = MemoryManager.GetBufferSize(source);
-
-using MemoryStream rawStream = new(zlChunks);
-ZLibCompressor.DecompressStream(source, rawStream);
-
-rawStream.Seek(0, SeekOrigin.Begin);
-
-return rawStream.ReadPtr();
-}
-
 // Decode U-Tex (buffer to bitmap)
 
 public static SKBitmap Decode(NativeBuffer source)
 {
 using var srcStream = source.GetStream();
-using var raw = DecompressImg(srcStream);
 
-return UTexParser.Decode(raw);
+return Decode(srcStream);
 }
 
 // Decode U-Tex (stream to bitmap)
 
 public static SKBitmap Decode(Stream source)
 {
-using var raw = DecompressImg(source);
+using var raw = ZLibBufferCompressor.Decompress(source);
 
 return UTexParser.Decode(raw);
 }

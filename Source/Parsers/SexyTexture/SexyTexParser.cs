@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using BlossomLib.Modules.Compression;
 using SkiaSharp;
 
 namespace TextureTranscoder.Parsers.SexyTexture
@@ -39,8 +38,7 @@ _ => throw new NotSupportedException(FormatMsg(format) )
 
 private static void CompressImg(NativeBuffer input, Stream output)
 {
-using var inputStream = input.GetStream();
-ZLibCompressor.CompressStream(inputStream, output, default);
+ZLibBufferCompressor.Compress(input, output);
 
 long currentPos = output.Position;
 var sizeCompressed = (int)(output.Length - 48); // Size doesn't include header bytes
@@ -143,18 +141,6 @@ TraceLogger.WriteWarn($"Unknown version: V{info.Version} - Expected: V{VERSION}"
 return info;
 }
 
-// Decompress image
-
-private static NativeBuffer DecompressImg(Stream input, int bytesCompressed)
-{
-using MemoryStream rawStream = new();
-
-ZLibCompressor.DecompressStream(input, rawStream, bytesCompressed);
-rawStream.Seek(0, SeekOrigin.Begin);
-
-return rawStream.ReadPtr();
-}
-
 // Decode raw tex
 
 private static SKBitmap DecodeRaw(ReadOnlySpan<byte> source, SexyTexFormat format, int width, int height)
@@ -181,8 +167,8 @@ private static unsafe SKBitmap DecodeCompressed(ReadOnlySpan<byte> source, in Se
 
 fixed(byte* ptr = source)
 {
-using ReadOnlyUnmanagedStream compressedStream = new(ptr, source.Length);
-using var raw = DecompressImg(compressedStream, info.SizeCompressed);
+using ReadOnlyUnmanagedStream compressed = new(ptr, source.Length);
+using var raw = ZLibBufferCompressor.Decompress(compressed);
 
 return DecodeRaw(raw.GetView(), info.Format, info.Width, info.Height);
 }
